@@ -1,7 +1,14 @@
 package chatClient;
 
+import chatLogic.Contacto;
+import chatProtocol.User;
 import java.awt.Color;
-
+import chatLogic.ServiceUsuariosContactos;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import javax.swing.DefaultListModel;
 public class View extends javax.swing.JFrame implements java.util.Observer {
 
     /**
@@ -27,6 +34,12 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         post = new javax.swing.JButton();
         messages = new java.awt.TextArea();
         logout = new javax.swing.JButton();
+        BotonInsertar = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        Contactos = new javax.swing.JList<>();
+        jButton1 = new javax.swing.JButton();
+        jTextField2 = new javax.swing.JTextField();
         loginPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         id = new javax.swing.JTextField();
@@ -34,11 +47,22 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         login = new javax.swing.JButton();
         clave = new javax.swing.JPasswordField();
         finish = new javax.swing.JButton();
+        PanelInsercion = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        textNombre = new javax.swing.JTextField();
+        textID = new javax.swing.JTextField();
+        BotonAgregar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("CHAT");
 
         bodyPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        bodyPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                bodyPanelComponentShown(evt);
+            }
+        });
 
         post.setText("Enviar");
         post.addActionListener(new java.awt.event.ActionListener() {
@@ -54,39 +78,79 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
             }
         });
 
+        BotonInsertar.setText("Insertar contacto");
+        BotonInsertar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BotonInsertarActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("CONTACTOS");
+
+        jScrollPane1.setViewportView(Contactos);
+
+        jButton1.setText("Buscar por ID");
+
         javax.swing.GroupLayout bodyPanelLayout = new javax.swing.GroupLayout(bodyPanel);
         bodyPanel.setLayout(bodyPanelLayout);
         bodyPanelLayout.setHorizontalGroup(
             bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bodyPanelLayout.createSequentialGroup()
-                .addContainerGap(42, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(messages, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(bodyPanelLayout.createSequentialGroup()
                         .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(post)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(post)))
+                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bodyPanelLayout.createSequentialGroup()
-                        .addComponent(messages, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                        .addComponent(logout)))
+                        .addGap(6, 6, 6)
+                        .addComponent(logout)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(BotonInsertar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1))
+                    .addGroup(bodyPanelLayout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bodyPanelLayout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(bodyPanelLayout.createSequentialGroup()
+                                .addGap(88, 88, 88)
+                                .addComponent(jLabel5)
+                                .addGap(27, 27, 27)
+                                .addComponent(jTextField2)))))
                 .addContainerGap())
         );
         bodyPanelLayout.setVerticalGroup(
             bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bodyPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(bodyPanelLayout.createSequentialGroup()
-                        .addComponent(logout)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(bodyPanelLayout.createSequentialGroup()
                         .addComponent(messages, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(post))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(post)))
+                    .addGroup(bodyPanelLayout.createSequentialGroup()
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(logout)
+                            .addComponent(BotonInsertar)
+                            .addComponent(jButton1))
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bodyPanelLayout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addComponent(jLabel5))
+                            .addGroup(bodyPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(5, 5, 5)))
+                .addContainerGap())
         );
 
         loginPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -124,9 +188,9 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                 .addComponent(clave, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(login)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(102, 102, 102)
                 .addComponent(finish)
-                .addGap(138, 138, 138))
+                .addContainerGap(112, Short.MAX_VALUE))
         );
         loginPanelLayout.setVerticalGroup(
             loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,17 +206,67 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLabel3.setText("Nombre:");
+
+        jLabel4.setText("Identificacion:");
+
+        BotonAgregar.setText("Agregar");
+        BotonAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BotonAgregarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout PanelInsercionLayout = new javax.swing.GroupLayout(PanelInsercion);
+        PanelInsercion.setLayout(PanelInsercionLayout);
+        PanelInsercionLayout.setHorizontalGroup(
+            PanelInsercionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelInsercionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PanelInsercionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(PanelInsercionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(textNombre)
+                    .addComponent(textID, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(PanelInsercionLayout.createSequentialGroup()
+                .addGap(89, 89, 89)
+                .addComponent(BotonAgregar)
+                .addContainerGap(89, Short.MAX_VALUE))
+        );
+        PanelInsercionLayout.setVerticalGroup(
+            PanelInsercionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelInsercionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PanelInsercionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(textNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addGroup(PanelInsercionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(textID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(BotonAgregar)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(bodyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addComponent(loginPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(bodyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(PanelInsercion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(189, 189, 189))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,7 +274,9 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                 .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(bodyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(PanelInsercion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -190,6 +306,33 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     private void finishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishActionPerformed
         System.exit(0);
     }//GEN-LAST:event_finishActionPerformed
+
+    private void BotonInsertarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonInsertarActionPerformed
+        this.loginPanel.setVisible(false);
+        this.bodyPanel.setVisible(false);
+        this.PanelInsercion.setVisible(true);
+    }//GEN-LAST:event_BotonInsertarActionPerformed
+
+    private void BotonAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonAgregarActionPerformed
+         
+        if(this.textID.getText().isEmpty()||this.textNombre.getText().isEmpty())return;
+       Contacto c1 = new Contacto(this.textNombre.getText(),this.textID.getText());
+       ServiceUsuariosContactos.instance().add(c1);
+       this.textID.setText("");
+       this.textNombre.setText("");
+       this.loginPanel.setVisible(false);
+       this.bodyPanel.setVisible(true);
+       this.PanelInsercion.setVisible(false);
+    }//GEN-LAST:event_BotonAgregarActionPerformed
+
+    private void bodyPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_bodyPanelComponentShown
+
+        DefaultListModel modelo = new DefaultListModel();
+        for(int i =0;i<ServiceUsuariosContactos.instance().getContactos().size();i++){
+            modelo.addElement(ServiceUsuariosContactos.instance().getContactos().get(i).getNombre());
+        }
+        this.Contactos.setModel(modelo);
+    }//GEN-LAST:event_bodyPanelComponentShown
 
     /**
      * @param args the command line arguments
@@ -228,12 +371,22 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BotonAgregar;
+    private javax.swing.JButton BotonInsertar;
+    private javax.swing.JList<String> Contactos;
+    private javax.swing.JPanel PanelInsercion;
     private javax.swing.JPanel bodyPanel;
     public javax.swing.JPasswordField clave;
     private javax.swing.JButton finish;
     public javax.swing.JTextField id;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField2;
     public javax.swing.JButton login;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JButton logout;
@@ -241,6 +394,8 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     private java.awt.TextArea messages;
     public javax.swing.JButton post;
     private javax.swing.ButtonGroup sexoFld;
+    private javax.swing.JTextField textID;
+    private javax.swing.JTextField textNombre;
     // End of variables declaration//GEN-END:variables
     Controller controller;
     Model model;
@@ -257,6 +412,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
        if(model.getCurrentUser()==null){
            loginPanel.setVisible(true);
            bodyPanel.setVisible(false);
+           this.PanelInsercion.setVisible(false);
        }
        else{
            loginPanel.setVisible(false);
