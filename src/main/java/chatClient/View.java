@@ -218,8 +218,6 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         }
         //</editor-fold>
         //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -263,7 +261,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
        else{
            loginPanel.setVisible(false);
            bodyPanel.setVisible(true);           
-            this.setTitle(model.getCurrentUser().getId());
+            this.setTitle(model.getCurrentUser().getNombre()+" ID:" +model.getCurrentUser().getId());
             String msg="";
             for( String m: model.getMessages()){
                 msg+=(m +"\n");
