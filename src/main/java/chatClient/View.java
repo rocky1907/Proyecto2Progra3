@@ -39,7 +39,8 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         jScrollPane1 = new javax.swing.JScrollPane();
         Contactos = new javax.swing.JList<>();
         jButton1 = new javax.swing.JButton();
-        jTextField2 = new javax.swing.JTextField();
+        textBuscar = new javax.swing.JTextField();
+        botonRefresh = new javax.swing.JButton();
         loginPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         id = new javax.swing.JTextField();
@@ -87,9 +88,26 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
 
         jLabel5.setText("CONTACTOS");
 
+        Contactos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ContactosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(Contactos);
 
-        jButton1.setText("Buscar por ID");
+        jButton1.setText("Buscar por nombre");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        botonRefresh.setText("Refresh");
+        botonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonRefreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout bodyPanelLayout = new javax.swing.GroupLayout(bodyPanel);
         bodyPanel.setLayout(bodyPanelLayout);
@@ -112,16 +130,15 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1))
                     .addGroup(bodyPanelLayout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(bodyPanelLayout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(bodyPanelLayout.createSequentialGroup()
-                                .addGap(88, 88, 88)
-                                .addComponent(jLabel5)
-                                .addGap(27, 27, 27)
-                                .addComponent(jTextField2)))))
+                        .addGap(10, 10, 10)
+                        .addComponent(botonRefresh)
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel5)
+                        .addGap(27, 27, 27)
+                        .addComponent(textBuscar))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bodyPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1)))
                 .addContainerGap())
         );
         bodyPanelLayout.setVerticalGroup(
@@ -142,11 +159,13 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                             .addComponent(jButton1))
                         .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(bodyPanelLayout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addComponent(jLabel5))
+                                .addGap(19, 19, 19)
+                                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(botonRefresh)))
                             .addGroup(bodyPanelLayout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(textBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(5, 5, 5)))
@@ -334,9 +353,34 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         this.Contactos.setModel(modelo);
     }//GEN-LAST:event_bodyPanelComponentShown
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        DefaultListModel modelo = new DefaultListModel();
+        if(this.textBuscar.getText().isEmpty())return;
+        List<Contacto> listAux = ServiceUsuariosContactos.instance().buscar(this.textBuscar.getText());
+        for(int i =0;i<listAux.size();i++){
+            modelo.addElement(listAux.get(i).getNombre());
+        }
+        this.Contactos.setModel(modelo);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void botonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRefreshActionPerformed
+        DefaultListModel modelo = new DefaultListModel();
+        for(int i =0;i<ServiceUsuariosContactos.instance().getContactos().size();i++){
+            modelo.addElement(ServiceUsuariosContactos.instance().getContactos().get(i).getNombre());
+        }
+        this.Contactos.setModel(modelo);
+    }//GEN-LAST:event_botonRefreshActionPerformed
+
+    private void ContactosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ContactosMouseClicked
+//        System.out.println("Nombre"+Contactos.getSelectedValue().toString());
+//        System.out.println("id"+Contactos.getSelectedIndex());
+        
+    }//GEN-LAST:event_ContactosMouseClicked
+
     /**
      * @param args the command line arguments
      */
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -376,6 +420,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     private javax.swing.JList<String> Contactos;
     private javax.swing.JPanel PanelInsercion;
     private javax.swing.JPanel bodyPanel;
+    private javax.swing.JButton botonRefresh;
     public javax.swing.JPasswordField clave;
     private javax.swing.JButton finish;
     public javax.swing.JTextField id;
@@ -386,7 +431,6 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField2;
     public javax.swing.JButton login;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JButton logout;
@@ -394,6 +438,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     private java.awt.TextArea messages;
     public javax.swing.JButton post;
     private javax.swing.ButtonGroup sexoFld;
+    private javax.swing.JTextField textBuscar;
     private javax.swing.JTextField textID;
     private javax.swing.JTextField textNombre;
     // End of variables declaration//GEN-END:variables
@@ -415,9 +460,15 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
            this.PanelInsercion.setVisible(false);
        }
        else{
-           loginPanel.setVisible(false);
-           bodyPanel.setVisible(true);           
-            this.setTitle(model.getCurrentUser().getNombre()+" ID:" +model.getCurrentUser().getId());
+            loginPanel.setVisible(false);
+            bodyPanel.setVisible(true);
+            if(this.model.getCurrentUser().conect==true){
+                this.setTitle(model.getCurrentUser().getNombre()+" ID:" +model.getCurrentUser().getId()+
+                        " Conectado");
+            }else{
+                this.setTitle(model.getCurrentUser().getNombre()+" ID:" +model.getCurrentUser().getId()+
+                        " Desconectado");
+            }
             String msg="";
             for( String m: model.getMessages()){
                 msg+=(m +"\n");
@@ -425,7 +476,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
             this.messages.setText(msg);
             this.mensaje.setText("");
             this.mensaje.requestFocus();
-       }
+        }
         this.validate();
     } 
 }

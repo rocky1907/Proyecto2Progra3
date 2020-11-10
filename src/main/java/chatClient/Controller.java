@@ -26,6 +26,7 @@ public class Controller {
     }
     public void post(){
         String message=view.mensaje.getText();      
+        //ServiceProxy.instance().post(message);
         ServiceProxy.instance().post(message);
         model.commit();
     }
@@ -44,4 +45,5 @@ public class Controller {
         model.getMessages().add(message);
         model.commit();    
     }    
+    
 }

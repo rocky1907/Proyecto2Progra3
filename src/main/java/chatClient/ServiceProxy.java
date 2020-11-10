@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.SwingUtilities;
 import chatProtocol.IService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServiceProxy implements IService{
     private static IService theInstance;
@@ -124,4 +126,5 @@ public class ServiceProxy implements IService{
          }
       );
    }
+
 }
