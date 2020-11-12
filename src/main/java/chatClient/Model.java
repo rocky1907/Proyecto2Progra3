@@ -1,12 +1,13 @@
 package chatClient;
 
+import chatLogic.Mensajes;
 import chatProtocol.User;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Model extends java.util.Observable {
     User currentUser;
-    List<String> messages;
+    List<Mensajes> messages;
 
     public Model() {
        currentUser = null;
@@ -21,11 +22,11 @@ public class Model extends java.util.Observable {
         this.currentUser = currentUser;
     }
 
-    public List<String> getMessages() {
+    public List<Mensajes> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<String> messages) {
+    public void setMessages(List<Mensajes> messages) {
         this.messages = messages;
     }
 

@@ -1,14 +1,20 @@
 package chatClient;
 
 import chatLogic.Contacto;
-import chatProtocol.User;
+import chatLogic.Mensajes;
 import java.awt.Color;
 import chatLogic.ServiceUsuariosContactos;
-import java.util.Collection;
-import java.util.Iterator;
+import chatXML.ChatXML;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
-import java.util.ListIterator;
-import javax.swing.DefaultListModel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 public class View extends javax.swing.JFrame implements java.util.Observer {
 
     /**
@@ -18,7 +24,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         initComponents();
         getRootPane().setDefaultButton(post);
     }
-
+    String receptor = " ";
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -36,11 +42,12 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         logout = new javax.swing.JButton();
         BotonInsertar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        Contactos = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
+        botonBuscar = new javax.swing.JButton();
         textBuscar = new javax.swing.JTextField();
         botonRefresh = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        Contactos = new javax.swing.JTable();
+        Destinatario = new javax.swing.JLabel();
         loginPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         id = new javax.swing.JTextField();
@@ -88,17 +95,10 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
 
         jLabel5.setText("CONTACTOS");
 
-        Contactos.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                ContactosMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(Contactos);
-
-        jButton1.setText("Buscar por nombre");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        botonBuscar.setText("Buscar por nombre");
+        botonBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                botonBuscarActionPerformed(evt);
             }
         });
 
@@ -108,6 +108,24 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                 botonRefreshActionPerformed(evt);
             }
         });
+
+        Contactos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2"
+            }
+        ));
+        Contactos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ContactosMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(Contactos);
+
+        Destinatario.setText("Sin destinatario");
 
         javax.swing.GroupLayout bodyPanelLayout = new javax.swing.GroupLayout(bodyPanel);
         bodyPanel.setLayout(bodyPanelLayout);
@@ -119,57 +137,58 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                     .addComponent(messages, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(bodyPanelLayout.createSequentialGroup()
                         .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(post)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(post))
+                    .addComponent(Destinatario, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bodyPanelLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(logout)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(BotonInsertar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addGroup(bodyPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(botonRefresh)
-                        .addGap(28, 28, 28)
-                        .addComponent(jLabel5)
-                        .addGap(27, 27, 27)
-                        .addComponent(textBuscar))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bodyPanelLayout.createSequentialGroup()
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(botonRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(logout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(25, 25, 25)
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(botonBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(BotonInsertar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(textBuscar, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(bodyPanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1)))
-                .addContainerGap())
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(bodyPanelLayout.createSequentialGroup()
+                        .addGap(93, 93, 93)
+                        .addComponent(jLabel5)))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
         bodyPanelLayout.setVerticalGroup(
             bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bodyPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bodyPanelLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(logout)
+                            .addComponent(BotonInsertar)
+                            .addComponent(Destinatario))
+                        .addGap(18, 18, 18)
+                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(botonRefresh)
+                            .addComponent(botonBuscar))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                        .addComponent(textBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(bodyPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(messages, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(post)))
-                    .addGroup(bodyPanelLayout.createSequentialGroup()
-                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(logout)
-                            .addComponent(BotonInsertar)
-                            .addComponent(jButton1))
-                        .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(bodyPanelLayout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addGroup(bodyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel5)
-                                    .addComponent(botonRefresh)))
-                            .addGroup(bodyPanelLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(textBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)))
-                .addContainerGap())
+                            .addComponent(post))
+                        .addGap(30, 30, 30))))
         );
 
         loginPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -209,7 +228,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                 .addComponent(login)
                 .addGap(102, 102, 102)
                 .addComponent(finish)
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         loginPanelLayout.setVerticalGroup(
             loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,27 +294,26 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(bodyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(bodyPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(loginPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(155, 155, 155)
                 .addComponent(PanelInsercion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(189, 189, 189))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(3, 3, 3)
                 .addComponent(loginPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bodyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(PanelInsercion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -312,6 +330,12 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
             controller.login();
             id.setText("");
             clave.setText("");
+            ChatXML xml = new ChatXML();
+        try {
+            ServiceUsuariosContactos.instance().setContactos(xml.cargarContactosXML(model.currentUser).getContactos());
+        } catch (JAXBException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
         } catch (Exception ex) {
             id.setBackground(Color.orange);
             clave.setBackground(Color.orange);
@@ -319,9 +343,23 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     }//GEN-LAST:event_loginActionPerformed
 
     private void logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutActionPerformed
+        chatXML.ChatXML xml = new ChatXML();
+        try {
+            xml.crearContactosXML(ServiceUsuariosContactos.instance(),model.currentUser);
+            xml.crearMensajesXML(model.getMessages() ,model.getCurrentUser());
+        } catch (JAXBException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+        this.setTitle(" Desconectado");
+        ServiceUsuariosContactos.instance().setInstance();
         controller.logout();
+        
     }//GEN-LAST:event_logoutActionPerformed
 
+    
     private void finishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishActionPerformed
         System.exit(0);
     }//GEN-LAST:event_finishActionPerformed
@@ -335,46 +373,115 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     private void BotonAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonAgregarActionPerformed
          
         if(this.textID.getText().isEmpty()||this.textNombre.getText().isEmpty())return;
-       Contacto c1 = new Contacto(this.textNombre.getText(),this.textID.getText());
-       ServiceUsuariosContactos.instance().add(c1);
-       this.textID.setText("");
-       this.textNombre.setText("");
-       this.loginPanel.setVisible(false);
-       this.bodyPanel.setVisible(true);
-       this.PanelInsercion.setVisible(false);
+        Contacto c1 = new Contacto(this.textNombre.getText(),this.textID.getText());
+        ServiceUsuariosContactos.instance().add(c1);
+        this.textID.setText("");
+        this.textNombre.setText("");
+        this.loginPanel.setVisible(false);
+        this.bodyPanel.setVisible(true);
+        this.PanelInsercion.setVisible(false);
+//        int pos =Contactos.getSelectedRow();
+        boolean bandera = false;
+        receptor=c1.getId();
+        if(this.model.getMessages()==null){
+            Mensajes ms = new Mensajes();
+            ms.setDestinatario(receptor);
+            model.getMessages().add(ms);
+        }else{
+            for (int i = 0; i < model.getMessages().size(); i++) {
+                if(model.getMessages().get(i).getDestinatario()==receptor){
+                    bandera = true;
+                }
+            }
+        }
+        if(!bandera){
+            Mensajes ms = new Mensajes();
+            ms.setDestinatario(receptor);
+            model.getMessages().add(ms);
+        }
     }//GEN-LAST:event_BotonAgregarActionPerformed
 
     private void bodyPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_bodyPanelComponentShown
-
-        DefaultListModel modelo = new DefaultListModel();
+        
+        String matris [][] = new String[ServiceUsuariosContactos.instance().getContactos().size()][2];
         for(int i =0;i<ServiceUsuariosContactos.instance().getContactos().size();i++){
-            modelo.addElement(ServiceUsuariosContactos.instance().getContactos().get(i).getNombre());
+            matris[i][0]=ServiceUsuariosContactos.instance().getContactos().get(i).getNombre();
+            matris[i][1]=ServiceUsuariosContactos.instance().getContactos().get(i).getId();
         }
-        this.Contactos.setModel(modelo);
+         Contactos.setModel(new javax.swing.table.DefaultTableModel(
+            matris,
+            new String [] {
+                "Nombre", "ID"
+            }
+        ));
     }//GEN-LAST:event_bodyPanelComponentShown
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        DefaultListModel modelo = new DefaultListModel();
+    private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
+        DefaultTableModel modelo = new DefaultTableModel();
         if(this.textBuscar.getText().isEmpty())return;
-        List<Contacto> listAux = ServiceUsuariosContactos.instance().buscar(this.textBuscar.getText());
+        List<Contacto> listAux = ServiceUsuariosContactos.instance().buscar2(this.textBuscar.getText());
+        String matris [][] = new String[ServiceUsuariosContactos.instance().getContactos().size()][2];
         for(int i =0;i<listAux.size();i++){
-            modelo.addElement(listAux.get(i).getNombre());
+            matris[i][0]=listAux.get(i).getNombre();
+            matris[i][1]=listAux.get(i).getId();
         }
-        this.Contactos.setModel(modelo);
-    }//GEN-LAST:event_jButton1ActionPerformed
+         Contactos.setModel(new javax.swing.table.DefaultTableModel(
+            matris,
+            new String [] {
+                "Nombre", "ID"
+            }
+        ));
+    }//GEN-LAST:event_botonBuscarActionPerformed
 
     private void botonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRefreshActionPerformed
-        DefaultListModel modelo = new DefaultListModel();
+        String matris [][] = new String[ServiceUsuariosContactos.instance().getContactos().size()][2];
         for(int i =0;i<ServiceUsuariosContactos.instance().getContactos().size();i++){
-            modelo.addElement(ServiceUsuariosContactos.instance().getContactos().get(i).getNombre());
+            matris[i][0]=ServiceUsuariosContactos.instance().getContactos().get(i).getNombre();
+            matris[i][1]=ServiceUsuariosContactos.instance().getContactos().get(i).getId();
         }
-        this.Contactos.setModel(modelo);
+         Contactos.setModel(new javax.swing.table.DefaultTableModel(
+            matris,
+            new String [] {
+                "Nombre", "ID"
+            }
+        ));
     }//GEN-LAST:event_botonRefreshActionPerformed
 
     private void ContactosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ContactosMouseClicked
-//        System.out.println("Nombre"+Contactos.getSelectedValue().toString());
-//        System.out.println("id"+Contactos.getSelectedIndex());
-        
+        int pos =Contactos.getSelectedRow();
+        boolean bandera = false;
+        receptor=ServiceUsuariosContactos.instance().getContactos().get(pos).getId();
+        this.Destinatario.setText(ServiceUsuariosContactos.instance().getContactos().get(pos).getNombre()+" "+receptor);
+        if(this.model.getMessages()==null){
+            Mensajes ms = new Mensajes();
+            ms.setDestinatario(receptor);
+            model.getMessages().add(ms);
+        }else{
+            for (int i = 0; i < model.getMessages().size(); i++) {
+                if(model.getMessages().get(i).getDestinatario()==receptor){
+                    bandera = true;
+                }
+            }
+        }
+        if(!bandera){
+            Mensajes ms = new Mensajes();
+            ms.setDestinatario(receptor);
+            model.getMessages().add(ms);
+        }
+        String msg="";
+        List<Mensajes> listAux =model.getMessages();
+            String m = "";
+            for (int i = 0; i <listAux.size(); i++) {
+               if(listAux.get(i).getDestinatario()==receptor){
+                    for (int j = 0; j < listAux.get(i).getMensajes().size(); j++) {
+                        m = listAux.get(i).getMensajes().get(j);
+                        msg+=(m +"\n");
+                    }
+                }
+            }
+            this.messages.setText(msg);
+            this.mensaje.setText("");
+            this.mensaje.requestFocus();
     }//GEN-LAST:event_ContactosMouseClicked
 
     /**
@@ -417,20 +524,21 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BotonAgregar;
     private javax.swing.JButton BotonInsertar;
-    private javax.swing.JList<String> Contactos;
+    private javax.swing.JTable Contactos;
+    private javax.swing.JLabel Destinatario;
     private javax.swing.JPanel PanelInsercion;
     private javax.swing.JPanel bodyPanel;
+    private javax.swing.JButton botonBuscar;
     private javax.swing.JButton botonRefresh;
     public javax.swing.JPasswordField clave;
     private javax.swing.JButton finish;
     public javax.swing.JTextField id;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     public javax.swing.JButton login;
     private javax.swing.JPanel loginPanel;
     private javax.swing.JButton logout;
@@ -453,6 +561,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
          model.addObserver(this);
     }
     
+    
    public void update(java.util.Observable updatedModel,Object parametros){
        if(model.getCurrentUser()==null){
            loginPanel.setVisible(true);
@@ -470,12 +579,23 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
                         " Desconectado");
             }
             String msg="";
-            for( String m: model.getMessages()){
-                msg+=(m +"\n");
+//            for( String m: model.getMessages()){
+//                msg+=(m +"\n");
+//            }
+            List<Mensajes> listAux =model.getMessages();
+            String m = "";
+            for (int i = 0; i <listAux.size(); i++) {
+               if(listAux.get(i).getDestinatario()==receptor){
+                    for (int j = 0; j < listAux.get(i).getMensajes().size(); j++) {
+                        m = listAux.get(i).getMensajes().get(j);
+                        msg+=(m +"\n");
+                    }
+                }
             }
             this.messages.setText(msg);
             this.mensaje.setText("");
             this.mensaje.requestFocus();
+            
         }
         this.validate();
     } 
