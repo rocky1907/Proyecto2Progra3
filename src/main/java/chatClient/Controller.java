@@ -1,6 +1,7 @@
 package chatClient;
 
 import chatLogic.Mensajes;
+import chatLogic.Texto;
 import chatProtocol.User;
 import java.util.ArrayList;
 
@@ -46,21 +47,27 @@ public class Controller {
         boolean bandera = false;
         if(model.getMessages()==null){
             Mensajes messi= new Mensajes();
+            Texto tex = new Texto();
+            tex.setTexto(message);
             messi.setDestinatario(x);
-            messi.getMensajes().add(message);
+            messi.getMensajes().add(tex);
             model.getMessages().add(messi);
         }else{
             for (int i = 0; i < model.getMessages().size(); i++) {
                 if(model.getMessages().get(i).getDestinatario().equals(x)){
-                    model.getMessages().get(i).getMensajes().add(message);
+                    Texto tex = new Texto();
+                    tex.setTexto(message);
+                    model.getMessages().get(i).getMensajes().add(tex);
                     bandera=true;
                 }
             }
         }
         if(!bandera){
             Mensajes messi= new Mensajes();
+            Texto tex = new Texto();
+            tex.setTexto(message);
             messi.setDestinatario(x);
-            messi.getMensajes().add(message);
+            messi.getMensajes().add(tex);
             model.getMessages().add(messi);
         }
         model.commit();    

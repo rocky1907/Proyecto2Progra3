@@ -6,6 +6,7 @@ import com.sun.xml.internal.ws.util.Pool;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,13 +30,25 @@ public class ChatXML {
        return s1;
    }
    
-   public void crearMensajesXML(List<Mensajes> li,User s) throws JAXBException, IOException{
-            JAXBContext context = JAXBContext.newInstance(li.getClass());
-            Marshaller marsha = context.createMarshaller();
-            marsha.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
-            //marsha.marshal(ServiceUsuariosContactos.instance(), System.out);
-            marsha.marshal(li, new FileWriter("C:\\Users\\DELL\\Documents\\Ciclo IV 2020\\Programacion III\\Proyecto 2\\XML\\Mensajes\\"+s.getId()+".xml"));
-        
+   public void crearMensajesXML(Mensajes li,User s) throws JAXBException, IOException{
+        JAXBContext context = JAXBContext.newInstance(Mensajes.class);
+        Marshaller marsha = context.createMarshaller();
+        marsha.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
+        //marsha.marshal(ServiceUsuariosContactos.instance(), System.out);
+        marsha.marshal(li, new FileWriter("C:\\Users\\DELL\\Documents\\Ciclo IV 2020\\Programacion III\\Proyecto 2\\XML\\Mensajes\\"+s.getId()+"-"+li.getDestinatario()+".xml"));
+
+   }
+   public List<Mensajes> cargarMensajesXML(User s) throws JAXBException{
+        JAXBContext context = JAXBContext.newInstance(Mensajes.class);
+        Unmarshaller unmar = context.createUnmarshaller();
+        List<Mensajes> list = new ArrayList<>();
+        for (int i = 0; i < ServiceUsuariosContactos.instance().getContactos().size(); i++) {
+            Mensajes m1 = new Mensajes();
+                m1 =(Mensajes) unmar.unmarshal(new File("C:\\Users\\DELL\\Documents\\Ciclo IV 2020\\Programacion III\\Proyecto 2\\XML\\Mensajes\\"
+               +s.getId()+"-"+ServiceUsuariosContactos.instance().getContactos().get(i).getId()+".xml"));
+        list.add(m1);
+        }
+        return list;
    }
 
     public ChatXML() {

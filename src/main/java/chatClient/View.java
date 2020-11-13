@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.bind.JAXBContext;
@@ -24,7 +25,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         initComponents();
         getRootPane().setDefaultButton(post);
     }
-    String receptor = " ";
+    String receptor = "SIN DESTINATARIO";
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -336,6 +337,8 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         } catch (JAXBException ex) {
             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
         }
+        this.model.getCurrentUser().conect = true;
+        model.setMessages(xml.cargarMensajesXML(model.currentUser));
         } catch (Exception ex) {
             id.setBackground(Color.orange);
             clave.setBackground(Color.orange);
@@ -346,15 +349,25 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         chatXML.ChatXML xml = new ChatXML();
         try {
             xml.crearContactosXML(ServiceUsuariosContactos.instance(),model.currentUser);
-            xml.crearMensajesXML(model.getMessages() ,model.getCurrentUser());
+            
         } catch (JAXBException ex) {
             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
+        for (int i = 0; i < model.getMessages().size(); i++) {
+            try {
+                xml.crearMensajesXML(model.getMessages().get(i) ,model.getCurrentUser());
+            } catch (JAXBException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        this.model.getCurrentUser().conect = false;
         this.setTitle(" Desconectado");
         ServiceUsuariosContactos.instance().setInstance();
+        receptor = "SIN DESTINATARIO";
         controller.logout();
         
     }//GEN-LAST:event_logoutActionPerformed
@@ -389,7 +402,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
             model.getMessages().add(ms);
         }else{
             for (int i = 0; i < model.getMessages().size(); i++) {
-                if(model.getMessages().get(i).getDestinatario()==receptor){
+                if(model.getMessages().get(i).getDestinatario().equals(receptor)){
                     bandera = true;
                 }
             }
@@ -458,7 +471,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
             model.getMessages().add(ms);
         }else{
             for (int i = 0; i < model.getMessages().size(); i++) {
-                if(model.getMessages().get(i).getDestinatario()==receptor){
+                if(model.getMessages().get(i).getDestinatario().equals(receptor)){
                     bandera = true;
                 }
             }
@@ -472,9 +485,9 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
         List<Mensajes> listAux =model.getMessages();
             String m = "";
             for (int i = 0; i <listAux.size(); i++) {
-               if(listAux.get(i).getDestinatario()==receptor){
+               if(listAux.get(i).getDestinatario().equals(receptor)){
                     for (int j = 0; j < listAux.get(i).getMensajes().size(); j++) {
-                        m = listAux.get(i).getMensajes().get(j);
+                        m = listAux.get(i).getMensajes().get(j).getTexto();
                         msg+=(m +"\n");
                     }
                 }
@@ -565,6 +578,7 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
    public void update(java.util.Observable updatedModel,Object parametros){
        if(model.getCurrentUser()==null){
            loginPanel.setVisible(true);
+           receptor="SIN DESTINATARIO";
            bodyPanel.setVisible(false);
            this.PanelInsercion.setVisible(false);
        }
@@ -585,9 +599,9 @@ public class View extends javax.swing.JFrame implements java.util.Observer {
             List<Mensajes> listAux =model.getMessages();
             String m = "";
             for (int i = 0; i <listAux.size(); i++) {
-               if(listAux.get(i).getDestinatario()==receptor){
+               if(listAux.get(i).getDestinatario().equals(receptor)){
                     for (int j = 0; j < listAux.get(i).getMensajes().size(); j++) {
-                        m = listAux.get(i).getMensajes().get(j);
+                        m = listAux.get(i).getMensajes().get(j).getTexto();
                         msg+=(m +"\n");
                     }
                 }
